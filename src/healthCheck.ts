@@ -34,7 +34,7 @@ interface HealthClient extends grpc.Client {
 
 type Result = {
   success: boolean
-  error?: string
+  message?: string
 }
 
 const createCredentials = (insecure: boolean): grpc.ChannelCredentials => {
@@ -60,11 +60,11 @@ export async function healthCheck(url: string, insecure: boolean = false): Promi
   try {
     const response = await checkHealth(client)
 
-    return response.status === SERVING_STATUS ? { success: true } : { success: false, error: response.status }
+    return response.status === SERVING_STATUS ? { success: true } : { success: false, message: response.status }
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
+      message: error instanceof Error ? error.message : "Unknown error",
     }
   } finally {
     client.close()

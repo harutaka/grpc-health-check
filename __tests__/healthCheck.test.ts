@@ -45,14 +45,14 @@ describe("healthCheck", () => {
     expect(mockClose).toHaveBeenCalledTimes(1)
   })
 
-  it("should return error when service is not SERVING", async () => {
+  it("should return message when service is not SERVING", async () => {
     mockCheck.mockImplementation((_, callback) => {
       callback(null, { status: "NOT_SERVING" })
     })
 
     const result = await healthCheck("localhost:50051", true)
 
-    expect(result).toEqual({ success: false, error: "NOT_SERVING" })
+    expect(result).toEqual({ success: false, message: "NOT_SERVING" })
     expect(mockCheck).toHaveBeenCalledTimes(1)
     expect(mockClose).toHaveBeenCalledTimes(1)
   })
@@ -64,7 +64,7 @@ describe("healthCheck", () => {
 
     const result = await healthCheck("localhost:50051", true)
 
-    expect(result).toEqual({ success: false, error: "Connection failed" })
+    expect(result).toEqual({ success: false, message: "Connection failed" })
     expect(mockCheck).toHaveBeenCalledTimes(1)
     expect(mockClose).toHaveBeenCalledTimes(1)
   })
