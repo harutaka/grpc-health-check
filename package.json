@@ -2,7 +2,7 @@
   "name": "@harutakax/grpc-health-check",
   "version": "0.1.0",
   "type": "module",
-  "description": "grpc health check",
+  "description": "A simple and efficient TypeScript package for performing gRPC health checks",
   "license": "MIT",
   "author": "harutaka",
   "engines": {
