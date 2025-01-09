@@ -3,7 +3,7 @@ import * as protoLoader from "@grpc/proto-loader"
 import { promisify } from "util"
 import * as path from "path"
 
-const PROTO_PATH = path.resolve(import.meta.dirname, "health.proto")
+const PROTO_PATH = path.resolve(import.meta.dirname, "..", "health.proto")
 const DEFAULT_PORT = "443"
 const SERVING_STATUS = "SERVING"
 
