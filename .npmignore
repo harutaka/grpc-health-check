@@ -11,4 +11,3 @@ src/
 tsconfig.*
 eslint.config.*
 jest.config.*
-check.ts
