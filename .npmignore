@@ -1,0 +1,14 @@
+node_modules/
+coverage/
+__tests__/
+src/
+.history
+*.pem
+.node-version
+*.http
+.envrc
+.env
+tsconfig.*
+eslint.config.*
+jest.config.*
+check.ts

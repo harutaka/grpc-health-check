@@ -1,12 +1,51 @@
 {
   "name": "@harutakax/grpc-health-check",
   "version": "0.1.0",
+  "type": "module",
   "description": "grpc health check",
   "license": "MIT",
   "author": "harutaka",
-  "type": "esmodule",
-  "main": "index.js",
+  "engines": {
+    "node": ">=22.x"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.cts",
+  "exports": {
+    "require": {
+      "types": "./dist/index.d.cts",
+      "default": "./dist/index.cjs"
+    },
+    "import": {
+      "types": "./dist/index.d.mts",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "prettier": {
+    "printWidth": 120,
+    "semi": false
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsx check.ts",
+    "build": "pkgroll",
+    "lint": "eslint src/**/*.ts",
+    "prettier": "prettier --write src/*.ts test/*.ts",
+    "test": "vitest",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@grpc/grpc-js": "^1.12.5",
+    "@grpc/proto-loader": "^0.7.13"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "@types/node": "^22.10.5",
+    "eslint": "^9.17.0",
+    "pkgroll": "^2.6.1",
+    "prettier": "^3.4.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.19.1",
+    "vitest": "^2.1.8"
   }
 }
