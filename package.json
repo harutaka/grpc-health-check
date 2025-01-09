@@ -28,8 +28,8 @@
   "scripts": {
     "dev": "tsx check.ts",
     "build": "pkgroll",
-    "lint": "eslint src/**/*.ts",
-    "prettier": "prettier --write src/*.ts test/*.ts",
+    "lint": "eslint src/**/*.ts __tests__/**/*.ts",
+    "prettier": "prettier --write src/*.ts __tests__/*.ts",
     "test": "vitest",
     "prepublishOnly": "npm run build"
   },
