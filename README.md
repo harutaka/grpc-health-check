@@ -21,7 +21,7 @@ npm install @harutakax/grpc-health-check
 import { healthCheck } from "@harutakax/grpc-health-check"
 
 async function checkServerHealth() {
-  const result = await healthCheck("localhost:50051")
+  const result = await healthCheck("localhost:50051", true)
   if (result.success) {
     console.log("success")
   } else {
