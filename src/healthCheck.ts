@@ -1,10 +1,10 @@
 import * as grpc from "@grpc/grpc-js"
 import * as protoLoader from "@grpc/proto-loader"
-import { promisify } from "util"
-import * as path from "path"
+import { promisify } from "node:util"
+import { fromFileUrl, dirname, join } from "@std/path"
 
-const dirname = typeof __dirname !== "undefined" ? __dirname : import.meta.dirname
-const PROTO_PATH = path.resolve(dirname, "..", "health.proto")
+const projectDir = dirname(fromFileUrl(import.meta.url))
+const PROTO_PATH = join(projectDir, "..", "health.proto")
 const DEFAULT_PORT = "443"
 const SERVING_STATUS = "SERVING"
 
@@ -57,6 +57,7 @@ export async function healthCheck(url: string, insecure: boolean = false): Promi
 
   const credentials = createCredentials(insecure)
   const client = new healthProto.Health(address, credentials)
+  console.log(address, insecure)
 
   try {
     const response = await checkHealth(client)

@@ -1,1 +1,1 @@
-export { healthCheck } from "./healthCheck"
+export { healthCheck } from "./healthCheck.ts"

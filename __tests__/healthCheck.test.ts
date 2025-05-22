@@ -1,83 +1,133 @@
-import { healthCheck } from "../src/healthCheck"
+import { assertEquals, assertObjectMatch } from "jsr:@std/assert";
+import { afterEach, beforeEach, describe, it } from "jsr:@std/testing/bdd";
+import { healthCheck } from "../src/healthCheck.ts";
+import * as grpc from "@grpc/grpc-js";
+import * as protoLoader from "@grpc/proto-loader";
+import { fromFileUrl, dirname, join } from "jsr:@std/path";
 
-const mockCheck = vi.fn()
-const mockClose = vi.fn()
+// モックgRPCヘルスチェックサーバーの設定
+const projectDir = dirname(fromFileUrl(import.meta.url));
+const PROTO_PATH = join(projectDir, "..", "health.proto");
+const TEST_PORT = "50051";
+const TEST_ADDRESS = `localhost:${TEST_PORT}`;
 
-vi.mock("@grpc/grpc-js", () => {
-  const actual = vi.importActual("@grpc/grpc-js")
-  return {
-    ...actual,
-    credentials: {
-      createInsecure: vi.fn(() => ({})),
-      createSsl: vi.fn(() => ({})),
+
+// 型定義を追加
+interface HealthPackageDefinition {
+  grpc: {
+    health: {
+      v1: {
+        Health: {
+          service: grpc.ServiceDefinition<any>;
+          new (address: string, credentials: grpc.ChannelCredentials): any;
+        };
+      };
+    };
+  };
+}
+
+// モックサーバーの作成用関数
+function createMockServer(status = "SERVING") {
+  const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
+    keepCase: true,
+    longs: String,
+    enums: String,
+    defaults: true,
+    oneofs: true,
+  });
+
+  const healthPackage = grpc.loadPackageDefinition(packageDefinition) as unknown as HealthPackageDefinition;
+  const server = new grpc.Server();
+
+  // ヘルスチェックサービスの実装
+  server.addService(healthPackage.grpc.health.v1.Health.service, {
+    check: (_: any, callback: (error: Error | null, response: any) => void) => {
+      callback(null, { status });
     },
-    loadPackageDefinition: vi.fn(() => ({
-      grpc: {
-        health: {
-          v1: {
-            Health: vi.fn().mockImplementation(() => {
-              return {
-                check: mockCheck,
-                close: mockClose,
-              }
-            }),
-          },
-        },
-      },
-    })),
-  }
-})
+  });
+
+  return server;
+}
 
 describe("healthCheck", () => {
+  let server: grpc.Server;
+
+  beforeEach(() => {
+    // 各テスト前にモックサーバーを起動
+    server = createMockServer();
+    server.bindAsync(
+      TEST_ADDRESS,
+      grpc.ServerCredentials.createInsecure(),
+      (err: Error | null) => {
+        if (err) {
+          console.error("Server start failed:", err);
+          Deno.exit(1);
+        }
+        server.start();
+        console.log(`Mock gRPC health server started on \${TEST_ADDRESS}`);
+      }
+    );
+  });
+
   afterEach(() => {
-    vi.clearAllMocks()
-  })
+    // 各テスト後にサーバーをシャットダウン
+    server.forceShutdown();
+    console.log("Mock gRPC health server shut down");
+  });
 
-  it("should return success when service is SERVING", async () => {
-    mockCheck.mockImplementation((_, callback) => {
-      callback(null, { status: "SERVING" })
-    })
+  it("should return success when service is serving", async () => {
+    const result = await healthCheck(TEST_ADDRESS, true);
+    
+    assertObjectMatch(result, {
+      success: true,
+    });
+  });
 
-    const result = await healthCheck("localhost:50051", true)
+  it("should return failure when service is not serving", async () => {
+    // サーバーを停止して再起動(別のステータスで)
+    server.forceShutdown();
+    server = createMockServer("NOT_SERVING");
+    server.bindAsync(
+      TEST_ADDRESS,
+      grpc.ServerCredentials.createInsecure(),
+      () => {
+        server.start();
+      }
+    );
 
-    expect(result).toEqual({ success: true })
-    expect(mockCheck).toHaveBeenCalledTimes(1)
-    expect(mockClose).toHaveBeenCalledTimes(1)
-  })
+    // ステータスが変わるのを少し待つ
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    
+    const result = await healthCheck(TEST_ADDRESS, true);
+    
+    assertObjectMatch(result, {
+      success: false,
+      message: "NOT_SERVING",
+    });
+  });
 
-  it("should return message when service is not SERVING", async () => {
-    mockCheck.mockImplementation((_, callback) => {
-      callback(null, { status: "NOT_SERVING" })
-    })
+  it("should handle connection errors", async () => {
+    // サーバーをシャットダウン
+    server.forceShutdown();
+    
+    // シャットダウンしたサーバーにアクセスを試みる
+    const result = await healthCheck(TEST_ADDRESS, true);
+    
+    assertEquals(result.success, false);
+    // エラーメッセージの完全一致ではなく、含まれているかチェック
+    // 実際のエラーメッセージはプラットフォームやgrpcのバージョンによって異なる可能性がある
+    assertTrue(result.message?.includes("Error") || result.message?.includes("error"));
+  });
 
-    const result = await healthCheck("localhost:50051", true)
+  it("should use default port when not specified", async () => {
+    // エラーが発生することを期待 (デフォルトポート443に接続しようとする)
+    const result = await healthCheck("localhost", true);
+    
+    assertEquals(result.success, false);
+  });
+});
 
-    expect(result).toEqual({ success: false, message: "NOT_SERVING" })
-    expect(mockCheck).toHaveBeenCalledTimes(1)
-    expect(mockClose).toHaveBeenCalledTimes(1)
-  })
-
-  it("should handle errors thrown by the gRPC client", async () => {
-    mockCheck.mockImplementation((_, callback) => {
-      callback(new Error("Connection failed"), null)
-    })
-
-    const result = await healthCheck("localhost:50051", true)
-
-    expect(result).toEqual({ success: false, message: "Connection failed" })
-    expect(mockCheck).toHaveBeenCalledTimes(1)
-    expect(mockClose).toHaveBeenCalledTimes(1)
-  })
-
-  it("should use the default port when none is provided", async () => {
-    mockCheck.mockImplementation((_, callback) => {
-      callback(null, { status: "SERVING" })
-    })
-
-    const result = await healthCheck("localhost", true)
-
-    expect(result).toEqual({ success: true })
-    expect(mockCheck).toHaveBeenCalledTimes(1)
-    expect(mockClose).toHaveBeenCalledTimes(1)
-  })
-})
+// テストヘルパー関数
+function assertTrue(condition?: boolean): void {
+  assertEquals(condition, true);
+}
