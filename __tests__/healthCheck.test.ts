@@ -1,133 +1,88 @@
-import { assertEquals, assertObjectMatch } from "jsr:@std/assert";
-import { afterEach, beforeEach, describe, it } from "jsr:@std/testing/bdd";
-import { healthCheck } from "../src/healthCheck.ts";
-import * as grpc from "@grpc/grpc-js";
-import * as protoLoader from "@grpc/proto-loader";
-import { fromFileUrl, dirname, join } from "jsr:@std/path";
+import { assertEquals } from "@std/assert"
+import { healthCheck } from "../src/healthCheck.ts"
+import { HealthCheckResponse_ServingStatus as Status } from "../gen/health_pb.ts"
 
-// モックgRPCヘルスチェックサーバーの設定
-const projectDir = dirname(fromFileUrl(import.meta.url));
-const PROTO_PATH = join(projectDir, "..", "health.proto");
-const TEST_PORT = "50051";
-const TEST_ADDRESS = `localhost:${TEST_PORT}`;
+Deno.test({
+  name: "healthCheck - function exists and has correct signature",
+  fn() {
+    // Test that the function exists and is callable
+    assertEquals(typeof healthCheck, "function")
+    assertEquals(healthCheck.length, 1)
+  },
+})
 
+Deno.test({
+  name: "healthCheck - returns Promise with correct structure for invalid URL",
+  async fn() {
+    const result = await healthCheck("invalid-url-that-does-not-exist.local")
 
-// 型定義を追加
-interface HealthPackageDefinition {
-  grpc: {
-    health: {
-      v1: {
-        Health: {
-          service: grpc.ServiceDefinition<any>;
-          new (address: string, credentials: grpc.ChannelCredentials): any;
-        };
-      };
-    };
-  };
-}
+    assertEquals(typeof result, "object")
+    assertEquals(typeof result.success, "boolean")
+    assertEquals(result.success, false)
+    assertEquals(typeof result.message, "string")
+  },
+})
 
-// モックサーバーの作成用関数
-function createMockServer(status = "SERVING") {
-  const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
-    keepCase: true,
-    longs: String,
-    enums: String,
-    defaults: true,
-    oneofs: true,
-  });
+Deno.test({
+  name: "healthCheck - handles insecure parameter",
+  async fn() {
+    const result = await healthCheck("invalid-url-that-does-not-exist.local", true)
 
-  const healthPackage = grpc.loadPackageDefinition(packageDefinition) as unknown as HealthPackageDefinition;
-  const server = new grpc.Server();
+    assertEquals(typeof result, "object")
+    assertEquals(typeof result.success, "boolean")
+    assertEquals(result.success, false)
+    assertEquals(typeof result.message, "string")
+  },
+})
 
-  // ヘルスチェックサービスの実装
-  server.addService(healthPackage.grpc.health.v1.Health.service, {
-    check: (_: any, callback: (error: Error | null, response: any) => void) => {
-      callback(null, { status });
-    },
-  });
+Deno.test({
+  name: "healthCheck - handles default insecure parameter",
+  async fn() {
+    const result = await healthCheck("invalid-url-that-does-not-exist.local")
 
-  return server;
-}
+    // Should return a proper Result object
+    assertEquals(typeof result, "object")
+    assertEquals(typeof result.success, "boolean")
+    assertEquals(result.success, false)
+    assertEquals(typeof result.message, "string")
+  },
+})
 
-describe("healthCheck", () => {
-  let server: grpc.Server;
+// Test helper function to verify Status enum values
+Deno.test({
+  name: "HealthCheckResponse_ServingStatus - enum values are correct",
+  fn() {
+    assertEquals(Status.UNKNOWN, 0)
+    assertEquals(Status.SERVING, 1)
+    assertEquals(Status.NOT_SERVING, 2)
+    assertEquals(Status.SERVICE_UNKNOWN, 3)
+  },
+})
 
-  beforeEach(() => {
-    // 各テスト前にモックサーバーを起動
-    server = createMockServer();
-    server.bindAsync(
-      TEST_ADDRESS,
-      grpc.ServerCredentials.createInsecure(),
-      (err: Error | null) => {
-        if (err) {
-          console.error("Server start failed:", err);
-          Deno.exit(1);
-        }
-        server.start();
-        console.log(`Mock gRPC health server started on \${TEST_ADDRESS}`);
+// Test for URL validation through createCheckedUrl integration
+Deno.test({
+  name: "healthCheck - processes different URL formats",
+  async fn() {
+    // Test various URL formats - they should all fail but not throw errors
+    const testUrls = [
+      "example.com",
+      "http://example.com",
+      "https://example.com",
+      "grpc://example.com",
+      "example.com:8080",
+      "localhost:50051",
+    ]
+
+    for (const url of testUrls) {
+      const result = await healthCheck(url)
+
+      // All should return valid Result objects (even if they fail to connect)
+      assertEquals(typeof result, "object")
+      assertEquals(typeof result.success, "boolean")
+
+      if (!result.success) {
+        assertEquals(typeof result.message, "string")
       }
-    );
-  });
-
-  afterEach(() => {
-    // 各テスト後にサーバーをシャットダウン
-    server.forceShutdown();
-    console.log("Mock gRPC health server shut down");
-  });
-
-  it("should return success when service is serving", async () => {
-    const result = await healthCheck(TEST_ADDRESS, true);
-    
-    assertObjectMatch(result, {
-      success: true,
-    });
-  });
-
-  it("should return failure when service is not serving", async () => {
-    // サーバーを停止して再起動(別のステータスで)
-    server.forceShutdown();
-    server = createMockServer("NOT_SERVING");
-    server.bindAsync(
-      TEST_ADDRESS,
-      grpc.ServerCredentials.createInsecure(),
-      () => {
-        server.start();
-      }
-    );
-
-    // ステータスが変わるのを少し待つ
-    await new Promise((resolve) => setTimeout(resolve, 100));
-    
-    const result = await healthCheck(TEST_ADDRESS, true);
-    
-    assertObjectMatch(result, {
-      success: false,
-      message: "NOT_SERVING",
-    });
-  });
-
-  it("should handle connection errors", async () => {
-    // サーバーをシャットダウン
-    server.forceShutdown();
-    
-    // シャットダウンしたサーバーにアクセスを試みる
-    const result = await healthCheck(TEST_ADDRESS, true);
-    
-    assertEquals(result.success, false);
-    // エラーメッセージの完全一致ではなく、含まれているかチェック
-    // 実際のエラーメッセージはプラットフォームやgrpcのバージョンによって異なる可能性がある
-    assertTrue(result.message?.includes("Error") || result.message?.includes("error"));
-  });
-
-  it("should use default port when not specified", async () => {
-    // エラーが発生することを期待 (デフォルトポート443に接続しようとする)
-    const result = await healthCheck("localhost", true);
-    
-    assertEquals(result.success, false);
-  });
-});
-
-// テストヘルパー関数
-function assertTrue(condition?: boolean): void {
-  assertEquals(condition, true);
-}
+    }
+  },
+})

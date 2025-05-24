@@ -1,6 +1,7 @@
 # @harutakax/grpc-health-check
 
-A simple and efficient TypeScript package for performing gRPC health checks using the standard "GRPC Health Checking Protocol".
+A simple and efficient TypeScript package for performing gRPC health checks using the standard "GRPC Health Checking
+Protocol".
 
 ## Features
 
@@ -11,9 +12,16 @@ A simple and efficient TypeScript package for performing gRPC health checks usin
 
 ## Installation
 
-```bash
-npm install @harutakax/grpc-health-check
-```
+There are NPM and JSR packages available.
+
+- npm: https://www.npmjs.com/package/@harutakax/grpc-health-check
+- JSR: https://jsr.io/@harutakax/grpc-health-check
+
+````bash
+# For Node.js
+$ npm install @harutakax/grpc-health-check
+# For Deno
+$ deno add jsr:@harutakax/grpc-health-check
 
 ## Usage
 
@@ -30,10 +38,10 @@ async function checkServerHealth() {
 }
 
 checkServerHealth()
-```
+````
 
-Health checks are performed by calling the healthCheck function with a URL.
-The response includes success information, and an error message if the check fails.
+Health checks are performed by calling the healthCheck function with a URL. The response includes success information,
+and an error message if the check fails.
 
 ## API Reference
 
@@ -41,7 +49,8 @@ The response includes success information, and an error message if the check fai
 
 Performs a health check on the specified gRPC server.
 
-- url: The address and port number of the gRPC server. The port number is optional; if omitted, 443 is used by default (e.g., 'localhost:50051').
+- url: The address and port number of the gRPC server. The port number is optional; if omitted, 443 is used by default
+  (e.g., 'localhost:50051').
 - insecure(optional): Set to true to use an insecure connection. Default is false.
 
 Returns a Promise that resolves to a Result object indicating the success or failure of the health check.
@@ -58,7 +67,7 @@ type Result = {
 
 ## Requirements
 
-Node.js >= 22.x
+Node.js >= 22.x or Deno >= 2.x
 
 ## License
 

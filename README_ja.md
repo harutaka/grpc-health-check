@@ -11,8 +11,16 @@
 
 ## Installation
 
+NPM版とJSR版のパッケージがあります。
+
+- npm: https://www.npmjs.com/package/@harutakax/grpc-health-check
+- JSR: https://jsr.io/@harutakax/grpc-health-check
+
 ```bash
-npm install @harutakax/grpc-health-check
+# For Node.js
+$ npm install @harutakax/grpc-health-check
+# For Deno
+$ deno add jsr:@harutakax/grpc-health-check
 ```
 
 ## Usage
@@ -58,7 +66,7 @@ type Result = {
 
 ## Requirements
 
-Node.js >= 22.x
+Node.js >= 22.x or Deno >= 2.x
 
 ## License
 
