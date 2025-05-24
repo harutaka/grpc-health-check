@@ -1,0 +1,170 @@
+{
+  "version": "5",
+  "specifiers": {
+    "jsr:@david/code-block-writer@^13.0.2": "13.0.3",
+    "jsr:@deno/cache-dir@0.20": "0.20.1",
+    "jsr:@deno/dnt@~0.42.1": "0.42.1",
+    "jsr:@deno/graph@0.86": "0.86.9",
+    "jsr:@std/assert@*": "1.0.13",
+    "jsr:@std/assert@^1.0.13": "1.0.13",
+    "jsr:@std/bytes@^1.0.5": "1.0.5",
+    "jsr:@std/fmt@1": "1.0.7",
+    "jsr:@std/fmt@^1.0.3": "1.0.7",
+    "jsr:@std/fs@1": "1.0.17",
+    "jsr:@std/fs@^1.0.17": "1.0.17",
+    "jsr:@std/fs@^1.0.6": "1.0.17",
+    "jsr:@std/internal@^1.0.6": "1.0.7",
+    "jsr:@std/internal@^1.0.7": "1.0.7",
+    "jsr:@std/io@0.225": "0.225.2",
+    "jsr:@std/path@*": "1.0.9",
+    "jsr:@std/path@1": "1.0.9",
+    "jsr:@std/path@^1.0.8": "1.0.9",
+    "jsr:@std/path@^1.0.9": "1.0.9",
+    "jsr:@ts-morph/bootstrap@0.25": "0.25.0",
+    "jsr:@ts-morph/common@0.25": "0.25.0",
+    "npm:@bufbuild/protobuf@^2.5.0": "2.5.0",
+    "npm:@bufbuild/protoc-gen-es@*": "2.5.0_@bufbuild+protobuf@2.5.0",
+    "npm:@bufbuild/protoc-gen-es@^2.5.0": "2.5.0_@bufbuild+protobuf@2.5.0",
+    "npm:@connectrpc/connect-node@^2.0.2": "2.0.2_@bufbuild+protobuf@2.5.0_@connectrpc+connect@2.0.2__@bufbuild+protobuf@2.5.0",
+    "npm:@connectrpc/connect@^2.0.2": "2.0.2_@bufbuild+protobuf@2.5.0"
+  },
+  "jsr": {
+    "@david/code-block-writer@13.0.3": {
+      "integrity": "f98c77d320f5957899a61bfb7a9bead7c6d83ad1515daee92dbacc861e13bb7f"
+    },
+    "@deno/cache-dir@0.20.1": {
+      "integrity": "dc4f3add14307f3ff3b712441ea4acabcbfc9a13f67c5adc78c3aac16ac5e2a0",
+      "dependencies": [
+        "jsr:@deno/graph",
+        "jsr:@std/fmt@^1.0.3",
+        "jsr:@std/fs@^1.0.6",
+        "jsr:@std/io",
+        "jsr:@std/path@^1.0.8"
+      ]
+    },
+    "@deno/dnt@0.42.1": {
+      "integrity": "85322b38eb40d4e8c5216d62536152c35b1bda9dc47c8c60860610397b960223",
+      "dependencies": [
+        "jsr:@david/code-block-writer",
+        "jsr:@deno/cache-dir",
+        "jsr:@std/fmt@1",
+        "jsr:@std/fs@1",
+        "jsr:@std/path@1",
+        "jsr:@ts-morph/bootstrap"
+      ]
+    },
+    "@deno/graph@0.86.9": {
+      "integrity": "c4f353a695bcc5246c099602977dabc6534eacea9999a35a8cb24e807192e6a1"
+    },
+    "@std/assert@1.0.13": {
+      "integrity": "ae0d31e41919b12c656c742b22522c32fb26ed0cba32975cb0de2a273cb68b29",
+      "dependencies": [
+        "jsr:@std/internal@^1.0.6"
+      ]
+    },
+    "@std/bytes@1.0.5": {
+      "integrity": "4465dd739d7963d964c809202ebea6d5c6b8e3829ef25c6a224290fbb8a1021e"
+    },
+    "@std/fmt@1.0.7": {
+      "integrity": "2a727c043d8df62cd0b819b3fb709b64dd622e42c3b1bb817ea7e6cc606360fb"
+    },
+    "@std/fs@1.0.17": {
+      "integrity": "1c00c632677c1158988ef7a004cb16137f870aafdb8163b9dce86ec652f3952b",
+      "dependencies": [
+        "jsr:@std/path@^1.0.9"
+      ]
+    },
+    "@std/internal@1.0.7": {
+      "integrity": "39eeb5265190a7bc5d5591c9ff019490bd1f2c3907c044a11b0d545796158a0f"
+    },
+    "@std/io@0.225.2": {
+      "integrity": "3c740cd4ee4c082e6cfc86458f47e2ab7cb353dc6234d5e9b1f91a2de5f4d6c7",
+      "dependencies": [
+        "jsr:@std/bytes"
+      ]
+    },
+    "@std/path@1.0.9": {
+      "integrity": "260a49f11edd3db93dd38350bf9cd1b4d1366afa98e81b86167b4e3dd750129e"
+    },
+    "@ts-morph/bootstrap@0.25.0": {
+      "integrity": "3cd33ee80ac0aab8e5d2660c639a02187f0c8abfe454636ce86c00eb7e8407db",
+      "dependencies": [
+        "jsr:@ts-morph/common"
+      ]
+    },
+    "@ts-morph/common@0.25.0": {
+      "integrity": "e3ed1771e2fb61fbc3d2cb39ebbc4f89cd686d6d9bc6d91a71372be055ac1967",
+      "dependencies": [
+        "jsr:@std/fs@1",
+        "jsr:@std/path@1"
+      ]
+    }
+  },
+  "npm": {
+    "@bufbuild/protobuf@2.5.0": {
+      "integrity": "sha512-nniMblXT+dNyubek2OLKAYJnG/in4tmfS2c5CDnIvqfF9kFlERSG3FCBvmdqerpkWuPv0qhdGKReQ2OqKPG20w=="
+    },
+    "@bufbuild/protoc-gen-es@2.5.0_@bufbuild+protobuf@2.5.0": {
+      "integrity": "sha512-gVwQ1Juxi8auhrXs/b4L13OOjav+jfxcBFzUKZ4b4ErEk5Z8FRyNtxpACwDGgm5NXkCwi5oYbJBEIm0wT2s58w==",
+      "dependencies": [
+        "@bufbuild/protobuf",
+        "@bufbuild/protoplugin"
+      ],
+      "optionalPeers": [
+        "@bufbuild/protobuf"
+      ],
+      "bin": true
+    },
+    "@bufbuild/protoplugin@2.5.0_typescript@5.4.5": {
+      "integrity": "sha512-8Z/vSynBHQD81WO7430j3FQyZr57EjnRjEwlNfz4/7bEv6vLfROn+ovOg07hA2BNCe7JPnyJzUAb2yZ6W1M7Ww==",
+      "dependencies": [
+        "@bufbuild/protobuf",
+        "@typescript/vfs",
+        "typescript"
+      ]
+    },
+    "@connectrpc/connect-node@2.0.2_@bufbuild+protobuf@2.5.0_@connectrpc+connect@2.0.2__@bufbuild+protobuf@2.5.0": {
+      "integrity": "sha512-33Ut3SRkb6SugpwVCtXXRvUrOdtiyG6z6d5+eijBOLOI75sw1tDCwcs0o/9WL3rUj1M08dLUrPmJB47fjpv6EA==",
+      "dependencies": [
+        "@bufbuild/protobuf",
+        "@connectrpc/connect"
+      ]
+    },
+    "@connectrpc/connect@2.0.2_@bufbuild+protobuf@2.5.0": {
+      "integrity": "sha512-xZuylIUNvNlH52e/4eQsZvY4QZyDJRtEFEDnn/yBrv5Xi5ZZI/p8X+GAHH35ucVaBvv9u7OzHZo8+tEh1EFTxA==",
+      "dependencies": [
+        "@bufbuild/protobuf"
+      ]
+    },
+    "@typescript/vfs@1.6.1_typescript@5.4.5": {
+      "integrity": "sha512-JwoxboBh7Oz1v38tPbkrZ62ZXNHAk9bJ7c9x0eI5zBfBnBYGhURdbnh7Z4smN/MV48Y5OCcZb58n972UtbazsA==",
+      "dependencies": [
+        "debug",
+        "typescript"
+      ]
+    },
+    "debug@4.4.1": {
+      "integrity": "sha512-KcKCqiftBJcZr++7ykoDIEwSa3XWowTfNPo92BYxjXiyYEVrUQh2aLyhxBCwww+heortUFxEJYcRzosstTEBYQ==",
+      "dependencies": [
+        "ms"
+      ]
+    },
+    "ms@2.1.3": {
+      "integrity": "sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA=="
+    },
+    "typescript@5.4.5": {
+      "integrity": "sha512-vcI4UpRgg81oIRUFwR0WSIHKt11nJ7SAVlYNIu+QpqeyXP+gpQJy/Z4+F0aGxSE4MqwjyXvW/TzgkLAx2AGHwQ==",
+      "bin": true
+    }
+  },
+  "workspace": {
+    "dependencies": [
+      "jsr:@deno/dnt@~0.42.1",
+      "jsr:@std/assert@^1.0.13",
+      "npm:@bufbuild/protobuf@^2.5.0",
+      "npm:@bufbuild/protoc-gen-es@^2.5.0",
+      "npm:@connectrpc/connect-node@^2.0.2",
+      "npm:@connectrpc/connect@^2.0.2"
+    ]
+  }
+}
